@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { ReactNode } from "react";
 
-const nav = [
+const nav: { to: string; label: string; icon: any; exact?: boolean }[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/app/mdr", label: "MDR / CDR", icon: MessageSquare },
   { to: "/app/clientes", label: "Clientes", icon: Users },
@@ -22,7 +22,7 @@ const nav = [
   { to: "/app/facturas", label: "Facturación", icon: FileText },
   { to: "/app/contabilidad", label: "Contabilidad", icon: Receipt },
   { to: "/app/cierres", label: "Cierres", icon: Lock },
-] as const;
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
