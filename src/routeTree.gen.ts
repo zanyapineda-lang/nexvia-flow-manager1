@@ -14,7 +14,11 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppMdrRouteImport } from './routes/app.mdr'
+import { Route as AppFacturasRouteImport } from './routes/app.facturas'
+import { Route as AppContabilidadRouteImport } from './routes/app.contabilidad'
+import { Route as AppClientesAnalyticsRouteImport } from './routes/app.clientes-analytics'
 import { Route as AppClientesRouteImport } from './routes/app.clientes'
+import { Route as AppCierresRouteImport } from './routes/app.cierres'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -41,9 +45,29 @@ const AppMdrRoute = AppMdrRouteImport.update({
   path: '/mdr',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFacturasRoute = AppFacturasRouteImport.update({
+  id: '/facturas',
+  path: '/facturas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContabilidadRoute = AppContabilidadRouteImport.update({
+  id: '/contabilidad',
+  path: '/contabilidad',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClientesAnalyticsRoute = AppClientesAnalyticsRouteImport.update({
+  id: '/clientes-analytics',
+  path: '/clientes-analytics',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppClientesRoute = AppClientesRouteImport.update({
   id: '/clientes',
   path: '/clientes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCierresRoute = AppCierresRouteImport.update({
+  id: '/cierres',
+  path: '/cierres',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -51,14 +75,22 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/app/cierres': typeof AppCierresRoute
   '/app/clientes': typeof AppClientesRoute
+  '/app/clientes-analytics': typeof AppClientesAnalyticsRoute
+  '/app/contabilidad': typeof AppContabilidadRoute
+  '/app/facturas': typeof AppFacturasRoute
   '/app/mdr': typeof AppMdrRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/app/cierres': typeof AppCierresRoute
   '/app/clientes': typeof AppClientesRoute
+  '/app/clientes-analytics': typeof AppClientesAnalyticsRoute
+  '/app/contabilidad': typeof AppContabilidadRoute
+  '/app/facturas': typeof AppFacturasRoute
   '/app/mdr': typeof AppMdrRoute
   '/app': typeof AppIndexRoute
 }
@@ -67,21 +99,48 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/app/cierres': typeof AppCierresRoute
   '/app/clientes': typeof AppClientesRoute
+  '/app/clientes-analytics': typeof AppClientesAnalyticsRoute
+  '/app/contabilidad': typeof AppContabilidadRoute
+  '/app/facturas': typeof AppFacturasRoute
   '/app/mdr': typeof AppMdrRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/auth' | '/app/clientes' | '/app/mdr' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/cierres'
+    | '/app/clientes'
+    | '/app/clientes-analytics'
+    | '/app/contabilidad'
+    | '/app/facturas'
+    | '/app/mdr'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/app/clientes' | '/app/mdr' | '/app'
+  to:
+    | '/'
+    | '/auth'
+    | '/app/cierres'
+    | '/app/clientes'
+    | '/app/clientes-analytics'
+    | '/app/contabilidad'
+    | '/app/facturas'
+    | '/app/mdr'
+    | '/app'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/auth'
+    | '/app/cierres'
     | '/app/clientes'
+    | '/app/clientes-analytics'
+    | '/app/contabilidad'
+    | '/app/facturas'
     | '/app/mdr'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -129,6 +188,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMdrRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/facturas': {
+      id: '/app/facturas'
+      path: '/facturas'
+      fullPath: '/app/facturas'
+      preLoaderRoute: typeof AppFacturasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/contabilidad': {
+      id: '/app/contabilidad'
+      path: '/contabilidad'
+      fullPath: '/app/contabilidad'
+      preLoaderRoute: typeof AppContabilidadRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/clientes-analytics': {
+      id: '/app/clientes-analytics'
+      path: '/clientes-analytics'
+      fullPath: '/app/clientes-analytics'
+      preLoaderRoute: typeof AppClientesAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/clientes': {
       id: '/app/clientes'
       path: '/clientes'
@@ -136,17 +216,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppClientesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/cierres': {
+      id: '/app/cierres'
+      path: '/cierres'
+      fullPath: '/app/cierres'
+      preLoaderRoute: typeof AppCierresRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppCierresRoute: typeof AppCierresRoute
   AppClientesRoute: typeof AppClientesRoute
+  AppClientesAnalyticsRoute: typeof AppClientesAnalyticsRoute
+  AppContabilidadRoute: typeof AppContabilidadRoute
+  AppFacturasRoute: typeof AppFacturasRoute
   AppMdrRoute: typeof AppMdrRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppCierresRoute: AppCierresRoute,
   AppClientesRoute: AppClientesRoute,
+  AppClientesAnalyticsRoute: AppClientesAnalyticsRoute,
+  AppContabilidadRoute: AppContabilidadRoute,
+  AppFacturasRoute: AppFacturasRoute,
   AppMdrRoute: AppMdrRoute,
   AppIndexRoute: AppIndexRoute,
 }
