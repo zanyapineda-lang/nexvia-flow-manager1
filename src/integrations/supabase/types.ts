@@ -14,7 +14,331 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cierres_contables: {
+        Row: {
+          archivos: Json
+          created_at: string
+          estado: string
+          id: string
+          notas: string | null
+          periodo: string
+          total_egresos: number
+          total_ingresos: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archivos?: Json
+          created_at?: string
+          estado?: string
+          id?: string
+          notas?: string | null
+          periodo: string
+          total_egresos?: number
+          total_ingresos?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archivos?: Json
+          created_at?: string
+          estado?: string
+          id?: string
+          notas?: string | null
+          periodo?: string
+          total_egresos?: number
+          total_ingresos?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      clientes: {
+        Row: {
+          ciudad: string | null
+          created_at: string
+          direccion: string | null
+          email: string | null
+          id: string
+          nit: string | null
+          nombre: string
+          notas: string | null
+          telefono: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ciudad?: string | null
+          created_at?: string
+          direccion?: string | null
+          email?: string | null
+          id?: string
+          nit?: string | null
+          nombre: string
+          notas?: string | null
+          telefono?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ciudad?: string | null
+          created_at?: string
+          direccion?: string | null
+          email?: string | null
+          id?: string
+          nit?: string | null
+          nombre?: string
+          notas?: string | null
+          telefono?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      factura_items: {
+        Row: {
+          cantidad: number
+          created_at: string
+          descripcion: string
+          factura_id: string
+          id: string
+          orden: number
+          precio_unitario: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          cantidad?: number
+          created_at?: string
+          descripcion: string
+          factura_id: string
+          id?: string
+          orden?: number
+          precio_unitario?: number
+          total?: number
+          user_id: string
+        }
+        Update: {
+          cantidad?: number
+          created_at?: string
+          descripcion?: string
+          factura_id?: string
+          id?: string
+          orden?: number
+          precio_unitario?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factura_items_factura_id_fkey"
+            columns: ["factura_id"]
+            isOneToOne: false
+            referencedRelation: "facturas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facturas: {
+        Row: {
+          cliente_id: string | null
+          cliente_snapshot: Json | null
+          created_at: string
+          estado: string
+          fecha: string
+          fecha_vencimiento: string | null
+          id: string
+          iva: number
+          moneda: string
+          notas: string | null
+          numero: string
+          subtotal: number
+          tipo: string
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          cliente_snapshot?: Json | null
+          created_at?: string
+          estado?: string
+          fecha?: string
+          fecha_vencimiento?: string | null
+          id?: string
+          iva?: number
+          moneda?: string
+          notas?: string | null
+          numero: string
+          subtotal?: number
+          tipo?: string
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cliente_id?: string | null
+          cliente_snapshot?: Json | null
+          created_at?: string
+          estado?: string
+          fecha?: string
+          fecha_vencimiento?: string | null
+          id?: string
+          iva?: number
+          moneda?: string
+          notas?: string | null
+          numero?: string
+          subtotal?: number
+          tipo?: string
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facturas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mdr_datasets: {
+        Row: {
+          created_at: string
+          fecha_desde: string | null
+          fecha_hasta: string | null
+          id: string
+          nombre: string
+          resumen: Json
+          tipo: string
+          total_delivered: number
+          total_failed: number
+          total_in: number
+          total_out: number
+          total_registros: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fecha_desde?: string | null
+          fecha_hasta?: string | null
+          id?: string
+          nombre: string
+          resumen?: Json
+          tipo?: string
+          total_delivered?: number
+          total_failed?: number
+          total_in?: number
+          total_out?: number
+          total_registros?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fecha_desde?: string | null
+          fecha_hasta?: string | null
+          id?: string
+          nombre?: string
+          resumen?: Json
+          tipo?: string
+          total_delivered?: number
+          total_failed?: number
+          total_in?: number
+          total_out?: number
+          total_registros?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          empresa: string | null
+          id: string
+          nombre: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          id: string
+          nombre?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          nombre?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      soportes_pago: {
+        Row: {
+          cliente_id: string | null
+          created_at: string
+          factura_id: string | null
+          fecha: string | null
+          id: string
+          mime_type: string | null
+          monto: number | null
+          nombre_archivo: string
+          notas: string | null
+          storage_path: string
+          tamano_bytes: number | null
+          user_id: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string
+          factura_id?: string | null
+          fecha?: string | null
+          id?: string
+          mime_type?: string | null
+          monto?: number | null
+          nombre_archivo: string
+          notas?: string | null
+          storage_path: string
+          tamano_bytes?: number | null
+          user_id: string
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string
+          factura_id?: string | null
+          fecha?: string | null
+          id?: string
+          mime_type?: string | null
+          monto?: number | null
+          nombre_archivo?: string
+          notas?: string | null
+          storage_path?: string
+          tamano_bytes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "soportes_pago_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "soportes_pago_factura_id_fkey"
+            columns: ["factura_id"]
+            isOneToOne: false
+            referencedRelation: "facturas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
