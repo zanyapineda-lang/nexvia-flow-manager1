@@ -87,6 +87,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "nexvia dashboard" },
       { name: "twitter:description", content: "Nexvia Financial Suite is a comprehensive accounting and analytics application for managing financial operations." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2e88a9fd-2ff2-47bd-a545-d77da777a621" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2e88a9fd-2ff2-47bd-a545-d77da777a621" },
     ],
     links: [
       {
