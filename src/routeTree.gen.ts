@@ -9,38 +9,164 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppMdrRouteImport } from './routes/app.mdr'
+import { Route as AppFacturasRouteImport } from './routes/app.facturas'
+import { Route as AppContabilidadRouteImport } from './routes/app.contabilidad'
+import { Route as AppClientesAnalyticsRouteImport } from './routes/app.clientes-analytics'
+import { Route as AppClientesRouteImport } from './routes/app.clientes'
+import { Route as AppCierresRouteImport } from './routes/app.cierres'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMdrRoute = AppMdrRouteImport.update({
+  id: '/mdr',
+  path: '/mdr',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFacturasRoute = AppFacturasRouteImport.update({
+  id: '/facturas',
+  path: '/facturas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContabilidadRoute = AppContabilidadRouteImport.update({
+  id: '/contabilidad',
+  path: '/contabilidad',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClientesAnalyticsRoute = AppClientesAnalyticsRouteImport.update({
+  id: '/clientes-analytics',
+  path: '/clientes-analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClientesRoute = AppClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCierresRoute = AppCierresRouteImport.update({
+  id: '/cierres',
+  path: '/cierres',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/app/cierres': typeof AppCierresRoute
+  '/app/clientes': typeof AppClientesRoute
+  '/app/clientes-analytics': typeof AppClientesAnalyticsRoute
+  '/app/contabilidad': typeof AppContabilidadRoute
+  '/app/facturas': typeof AppFacturasRoute
+  '/app/mdr': typeof AppMdrRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/app/cierres': typeof AppCierresRoute
+  '/app/clientes': typeof AppClientesRoute
+  '/app/clientes-analytics': typeof AppClientesAnalyticsRoute
+  '/app/contabilidad': typeof AppContabilidadRoute
+  '/app/facturas': typeof AppFacturasRoute
+  '/app/mdr': typeof AppMdrRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/app/cierres': typeof AppCierresRoute
+  '/app/clientes': typeof AppClientesRoute
+  '/app/clientes-analytics': typeof AppClientesAnalyticsRoute
+  '/app/contabilidad': typeof AppContabilidadRoute
+  '/app/facturas': typeof AppFacturasRoute
+  '/app/mdr': typeof AppMdrRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/cierres'
+    | '/app/clientes'
+    | '/app/clientes-analytics'
+    | '/app/contabilidad'
+    | '/app/facturas'
+    | '/app/mdr'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/app/cierres'
+    | '/app/clientes'
+    | '/app/clientes-analytics'
+    | '/app/contabilidad'
+    | '/app/facturas'
+    | '/app/mdr'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/cierres'
+    | '/app/clientes'
+    | '/app/clientes-analytics'
+    | '/app/contabilidad'
+    | '/app/facturas'
+    | '/app/mdr'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +174,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/mdr': {
+      id: '/app/mdr'
+      path: '/mdr'
+      fullPath: '/app/mdr'
+      preLoaderRoute: typeof AppMdrRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/facturas': {
+      id: '/app/facturas'
+      path: '/facturas'
+      fullPath: '/app/facturas'
+      preLoaderRoute: typeof AppFacturasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/contabilidad': {
+      id: '/app/contabilidad'
+      path: '/contabilidad'
+      fullPath: '/app/contabilidad'
+      preLoaderRoute: typeof AppContabilidadRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/clientes-analytics': {
+      id: '/app/clientes-analytics'
+      path: '/clientes-analytics'
+      fullPath: '/app/clientes-analytics'
+      preLoaderRoute: typeof AppClientesAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/clientes': {
+      id: '/app/clientes'
+      path: '/clientes'
+      fullPath: '/app/clientes'
+      preLoaderRoute: typeof AppClientesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/cierres': {
+      id: '/app/cierres'
+      path: '/cierres'
+      fullPath: '/app/cierres'
+      preLoaderRoute: typeof AppCierresRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppCierresRoute: typeof AppCierresRoute
+  AppClientesRoute: typeof AppClientesRoute
+  AppClientesAnalyticsRoute: typeof AppClientesAnalyticsRoute
+  AppContabilidadRoute: typeof AppContabilidadRoute
+  AppFacturasRoute: typeof AppFacturasRoute
+  AppMdrRoute: typeof AppMdrRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCierresRoute: AppCierresRoute,
+  AppClientesRoute: AppClientesRoute,
+  AppClientesAnalyticsRoute: AppClientesAnalyticsRoute,
+  AppContabilidadRoute: AppContabilidadRoute,
+  AppFacturasRoute: AppFacturasRoute,
+  AppMdrRoute: AppMdrRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
