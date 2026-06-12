@@ -77,15 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "nexvia dashboard" },
       { name: "description", content: "Nexvia Financial Suite is a comprehensive accounting and analytics application for managing financial operations." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { property: "og:title", content: "nexvia dashboard" },
       { property: "og:description", content: "Nexvia Financial Suite is a comprehensive accounting and analytics application for managing financial operations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:title", content: "nexvia dashboard" },
       { name: "twitter:description", content: "Nexvia Financial Suite is a comprehensive accounting and analytics application for managing financial operations." },
     ],
     links: [
