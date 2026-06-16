@@ -30,13 +30,21 @@ function MdrPage() {
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState<"MDR" | "CDR">("MDR");
   const [pasted, setPasted] = useState("");
+  const [clienteId, setClienteId] = useState<string>("");
+  const [periodoDesde, setPeriodoDesde] = useState<string>("");
+  const [periodoHasta, setPeriodoHasta] = useState<string>("");
+
+  const { data: clientes = [] } = useQuery({
+    queryKey: ["clientes"],
+    queryFn: async () => (await supabase.from("clientes").select("id,nombre").order("nombre")).data || [],
+  });
 
   const { data: datasets = [] } = useQuery({
     queryKey: ["mdr_datasets"],
     queryFn: async () => {
       const { data } = await supabase
         .from("mdr_datasets")
-        .select("*")
+        .select("*, clientes(nombre)")
         .order("created_at", { ascending: false });
       return data || [];
     },
@@ -51,6 +59,8 @@ function MdrPage() {
         setProgress(total ? (read / total) * 100 : 0);
       });
       setSummary(s);
+      if (s.fechaDesde) setPeriodoDesde(s.fechaDesde);
+      if (s.fechaHasta) setPeriodoHasta(s.fechaHasta);
       toast.success(`Procesados ${s.total.toLocaleString()} registros`);
     } catch (e: any) {
       toast.error(e.message);
@@ -79,8 +89,9 @@ function MdrPage() {
       user_id: u.user.id,
       nombre: nombre || "Sin título",
       tipo,
-      fecha_desde: summary.fechaDesde || null,
-      fecha_hasta: summary.fechaHasta || null,
+      cliente_id: clienteId || null,
+      fecha_desde: periodoDesde || summary.fechaDesde || null,
+      fecha_hasta: periodoHasta || summary.fechaHasta || null,
       total_registros: summary.total,
       total_out: summary.out,
       total_in: summary.in,
