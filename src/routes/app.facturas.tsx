@@ -57,6 +57,32 @@ function FacturasPage() {
   const iva = (subtotal * ivaPct) / 100;
   const total = subtotal + iva;
 
+  const importarDesdeMdr = async () => {
+    if (!clienteId || !periodoDesde || !periodoHasta) return toast.error("Selecciona cliente y periodo");
+    const { data, error } = await supabase
+      .from("mdr_datasets")
+      .select("nombre,total_registros,total_out,total_delivered,fecha_desde,fecha_hasta")
+      .eq("cliente_id", clienteId)
+      .lte("fecha_desde", periodoHasta)
+      .gte("fecha_hasta", periodoDesde);
+    if (error) return toast.error(error.message);
+    if (!data || data.length === 0) {
+      setImportInfo("No se encontraron datasets MDR para este cliente en el periodo.");
+      return toast.error("Sin datasets MDR en el periodo");
+    }
+    const cantidad = data.reduce((s: number, d: any) => {
+      const v = baseSms === "delivered" ? d.total_delivered : baseSms === "out" ? d.total_out : d.total_registros;
+      return s + Number(v || 0);
+    }, 0);
+    const desc = `Servicio SMS ${baseSms === "delivered" ? "entregados" : baseSms === "out" ? "salientes" : "totales"} · ${periodoDesde} a ${periodoHasta} (${data.length} dataset${data.length > 1 ? "s" : ""})`;
+    setItems((prev) => {
+      const filtered = prev.filter((p) => p.descripcion.trim() !== "");
+      return [...filtered, { descripcion: desc, cantidad, precio_unitario: precioSms }];
+    });
+    setImportInfo(`Insertada línea: ${cantidad.toLocaleString()} SMS × ${precioSms} = ${fmt(cantidad * precioSms)}`);
+    toast.success(`${cantidad.toLocaleString()} SMS importados`);
+  };
+
   const guardar = async () => {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return;
