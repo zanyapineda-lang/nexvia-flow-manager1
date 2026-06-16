@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppMovimientosRouteImport } from './routes/app.movimientos'
 import { Route as AppMdrRouteImport } from './routes/app.mdr'
 import { Route as AppFacturasRouteImport } from './routes/app.facturas'
 import { Route as AppContabilidadRouteImport } from './routes/app.contabilidad'
@@ -38,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMovimientosRoute = AppMovimientosRouteImport.update({
+  id: '/movimientos',
+  path: '/movimientos',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMdrRoute = AppMdrRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/app/contabilidad': typeof AppContabilidadRoute
   '/app/facturas': typeof AppFacturasRoute
   '/app/mdr': typeof AppMdrRoute
+  '/app/movimientos': typeof AppMovimientosRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/app/contabilidad': typeof AppContabilidadRoute
   '/app/facturas': typeof AppFacturasRoute
   '/app/mdr': typeof AppMdrRoute
+  '/app/movimientos': typeof AppMovimientosRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/app/contabilidad': typeof AppContabilidadRoute
   '/app/facturas': typeof AppFacturasRoute
   '/app/mdr': typeof AppMdrRoute
+  '/app/movimientos': typeof AppMovimientosRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/app/contabilidad'
     | '/app/facturas'
     | '/app/mdr'
+    | '/app/movimientos'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/app/contabilidad'
     | '/app/facturas'
     | '/app/mdr'
+    | '/app/movimientos'
     | '/app'
   id:
     | '__root__'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/app/contabilidad'
     | '/app/facturas'
     | '/app/mdr'
+    | '/app/movimientos'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -179,6 +191,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/movimientos': {
+      id: '/app/movimientos'
+      path: '/movimientos'
+      fullPath: '/app/movimientos'
+      preLoaderRoute: typeof AppMovimientosRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/mdr': {
@@ -233,6 +252,7 @@ interface AppRouteChildren {
   AppContabilidadRoute: typeof AppContabilidadRoute
   AppFacturasRoute: typeof AppFacturasRoute
   AppMdrRoute: typeof AppMdrRoute
+  AppMovimientosRoute: typeof AppMovimientosRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -243,6 +263,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppContabilidadRoute: AppContabilidadRoute,
   AppFacturasRoute: AppFacturasRoute,
   AppMdrRoute: AppMdrRoute,
+  AppMovimientosRoute: AppMovimientosRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

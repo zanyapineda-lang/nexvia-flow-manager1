@@ -28,6 +28,11 @@ function FacturasPage() {
   const [notas, setNotas] = useState("");
   const [items, setItems] = useState<Item[]>([{ descripcion: "", cantidad: 1, precio_unitario: 0 }]);
   const [emisor, setEmisor] = useState<any>({ nombre: "NEXVIA", nit: "", email: "", telefono: "", direccion: "" });
+  const [periodoDesde, setPeriodoDesde] = useState("");
+  const [periodoHasta, setPeriodoHasta] = useState("");
+  const [precioSms, setPrecioSms] = useState<number>(0);
+  const [baseSms, setBaseSms] = useState<"delivered" | "total" | "out">("delivered");
+  const [importInfo, setImportInfo] = useState<string>("");
 
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes"],
@@ -51,6 +56,32 @@ function FacturasPage() {
   const subtotal = items.reduce((s, i) => s + Number(i.cantidad) * Number(i.precio_unitario), 0);
   const iva = (subtotal * ivaPct) / 100;
   const total = subtotal + iva;
+
+  const importarDesdeMdr = async () => {
+    if (!clienteId || !periodoDesde || !periodoHasta) return toast.error("Selecciona cliente y periodo");
+    const { data, error } = await supabase
+      .from("mdr_datasets")
+      .select("nombre,total_registros,total_out,total_delivered,fecha_desde,fecha_hasta")
+      .eq("cliente_id", clienteId)
+      .lte("fecha_desde", periodoHasta)
+      .gte("fecha_hasta", periodoDesde);
+    if (error) return toast.error(error.message);
+    if (!data || data.length === 0) {
+      setImportInfo("No se encontraron datasets MDR para este cliente en el periodo.");
+      return toast.error("Sin datasets MDR en el periodo");
+    }
+    const cantidad = data.reduce((s: number, d: any) => {
+      const v = baseSms === "delivered" ? d.total_delivered : baseSms === "out" ? d.total_out : d.total_registros;
+      return s + Number(v || 0);
+    }, 0);
+    const desc = `Servicio SMS ${baseSms === "delivered" ? "entregados" : baseSms === "out" ? "salientes" : "totales"} · ${periodoDesde} a ${periodoHasta} (${data.length} dataset${data.length > 1 ? "s" : ""})`;
+    setItems((prev) => {
+      const filtered = prev.filter((p) => p.descripcion.trim() !== "");
+      return [...filtered, { descripcion: desc, cantidad, precio_unitario: precioSms }];
+    });
+    setImportInfo(`Insertada línea: ${cantidad.toLocaleString()} SMS × ${precioSms} = ${fmt(cantidad * precioSms)}`);
+    toast.success(`${cantidad.toLocaleString()} SMS importados`);
+  };
 
   const guardar = async () => {
     const { data: u } = await supabase.auth.getUser();
@@ -126,6 +157,31 @@ function FacturasPage() {
                     <SelectContent>{clientes.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.nombre}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="mt-4 p-3 rounded-lg border bg-muted/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wider">Importar SMS desde MDR</Label>
+                  <Button size="sm" variant="outline" onClick={importarDesdeMdr} disabled={!clienteId || !periodoDesde || !periodoHasta || !precioSms}>
+                    Calcular e insertar línea
+                  </Button>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div><Label className="text-xs">Desde</Label><Input type="date" value={periodoDesde} onChange={(e) => setPeriodoDesde(e.target.value)} /></div>
+                  <div><Label className="text-xs">Hasta</Label><Input type="date" value={periodoHasta} onChange={(e) => setPeriodoHasta(e.target.value)} /></div>
+                  <div><Label className="text-xs">Precio / SMS</Label><Input type="number" step="0.01" value={precioSms} onChange={(e) => setPrecioSms(Number(e.target.value))} /></div>
+                  <div><Label className="text-xs">Base</Label>
+                    <Select value={baseSms} onValueChange={(v: any) => setBaseSms(v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="delivered">Entregados</SelectItem>
+                        <SelectItem value="total">Total</SelectItem>
+                        <SelectItem value="out">Salientes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                {importInfo && <div className="text-xs text-muted-foreground">{importInfo}</div>}
               </div>
               <div className="mt-3">
                 <div className="flex justify-between items-center mb-2">

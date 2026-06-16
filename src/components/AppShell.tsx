@@ -8,6 +8,7 @@ import {
   Lock,
   LogOut,
   BarChart3,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +21,8 @@ const nav: { to: string; label: string; icon: any; exact?: boolean }[] = [
   { to: "/app/clientes", label: "Clientes", icon: Users },
   { to: "/app/clientes-analytics", label: "Análisis de Clientes", icon: BarChart3 },
   { to: "/app/facturas", label: "Facturación", icon: FileText },
-  { to: "/app/contabilidad", label: "Contabilidad", icon: Receipt },
+  { to: "/app/movimientos", label: "Movimientos", icon: Wallet },
+  { to: "/app/contabilidad", label: "Soportes", icon: Receipt },
   { to: "/app/cierres", label: "Cierres", icon: Lock },
 ];
 

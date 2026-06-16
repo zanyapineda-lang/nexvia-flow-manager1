@@ -30,13 +30,21 @@ function MdrPage() {
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState<"MDR" | "CDR">("MDR");
   const [pasted, setPasted] = useState("");
+  const [clienteId, setClienteId] = useState<string>("");
+  const [periodoDesde, setPeriodoDesde] = useState<string>("");
+  const [periodoHasta, setPeriodoHasta] = useState<string>("");
+
+  const { data: clientes = [] } = useQuery({
+    queryKey: ["clientes"],
+    queryFn: async () => (await supabase.from("clientes").select("id,nombre").order("nombre")).data || [],
+  });
 
   const { data: datasets = [] } = useQuery({
     queryKey: ["mdr_datasets"],
     queryFn: async () => {
       const { data } = await supabase
         .from("mdr_datasets")
-        .select("*")
+        .select("*, clientes(nombre)")
         .order("created_at", { ascending: false });
       return data || [];
     },
@@ -51,6 +59,8 @@ function MdrPage() {
         setProgress(total ? (read / total) * 100 : 0);
       });
       setSummary(s);
+      if (s.fechaDesde) setPeriodoDesde(s.fechaDesde);
+      if (s.fechaHasta) setPeriodoHasta(s.fechaHasta);
       toast.success(`Procesados ${s.total.toLocaleString()} registros`);
     } catch (e: any) {
       toast.error(e.message);
@@ -79,8 +89,9 @@ function MdrPage() {
       user_id: u.user.id,
       nombre: nombre || "Sin título",
       tipo,
-      fecha_desde: summary.fechaDesde || null,
-      fecha_hasta: summary.fechaHasta || null,
+      cliente_id: clienteId || null,
+      fecha_desde: periodoDesde || summary.fechaDesde || null,
+      fecha_hasta: periodoHasta || summary.fechaHasta || null,
       total_registros: summary.total,
       total_out: summary.out,
       total_in: summary.in,
@@ -205,6 +216,27 @@ function MdrPage() {
               ))}
             </div>
           </div>
+          <div>
+            <Label>Cliente</Label>
+            <select
+              value={clienteId}
+              onChange={(e) => setClienteId(e.target.value)}
+              className="w-full mt-1 h-9 rounded-md border bg-card px-2 text-sm"
+            >
+              <option value="">— sin asignar —</option>
+              {clientes.map((c: any) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs">Periodo desde</Label>
+              <Input type="date" value={periodoDesde} onChange={(e) => setPeriodoDesde(e.target.value)} />
+            </div>
+            <div>
+              <Label className="text-xs">Periodo hasta</Label>
+              <Input type="date" value={periodoHasta} onChange={(e) => setPeriodoHasta(e.target.value)} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -306,7 +338,7 @@ function MdrPage() {
             {datasets.map((d: any) => (
               <div key={d.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30">
                 <div>
-                  <div className="font-medium text-sm">{d.nombre} <span className="text-xs text-muted-foreground">· {d.tipo}</span></div>
+                  <div className="font-medium text-sm">{d.nombre} <span className="text-xs text-muted-foreground">· {d.tipo}</span>{d.clientes?.nombre && <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary">{d.clientes.nombre}</span>}</div>
                   <div className="text-xs text-muted-foreground">
                     {d.fecha_desde || "—"} → {d.fecha_hasta || "—"} · {Number(d.total_registros).toLocaleString()} registros
                   </div>
