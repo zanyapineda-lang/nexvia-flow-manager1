@@ -338,7 +338,7 @@ function MdrPage() {
             {datasets.map((d: any) => (
               <div key={d.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30">
                 <div>
-                  <div className="font-medium text-sm">{d.nombre} <span className="text-xs text-muted-foreground">· {d.tipo}</span></div>
+                  <div className="font-medium text-sm">{d.nombre} <span className="text-xs text-muted-foreground">· {d.tipo}</span>{d.clientes?.nombre && <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary">{d.clientes.nombre}</span>}</div>
                   <div className="text-xs text-muted-foreground">
                     {d.fecha_desde || "—"} → {d.fecha_hasta || "—"} · {Number(d.total_registros).toLocaleString()} registros
                   </div>
