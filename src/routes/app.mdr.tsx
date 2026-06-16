@@ -216,6 +216,27 @@ function MdrPage() {
               ))}
             </div>
           </div>
+          <div>
+            <Label>Cliente</Label>
+            <select
+              value={clienteId}
+              onChange={(e) => setClienteId(e.target.value)}
+              className="w-full mt-1 h-9 rounded-md border bg-card px-2 text-sm"
+            >
+              <option value="">— sin asignar —</option>
+              {clientes.map((c: any) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs">Periodo desde</Label>
+              <Input type="date" value={periodoDesde} onChange={(e) => setPeriodoDesde(e.target.value)} />
+            </div>
+            <div>
+              <Label className="text-xs">Periodo hasta</Label>
+              <Input type="date" value={periodoHasta} onChange={(e) => setPeriodoHasta(e.target.value)} />
+            </div>
+          </div>
         </div>
       </div>
 
