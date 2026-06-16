@@ -28,6 +28,11 @@ function FacturasPage() {
   const [notas, setNotas] = useState("");
   const [items, setItems] = useState<Item[]>([{ descripcion: "", cantidad: 1, precio_unitario: 0 }]);
   const [emisor, setEmisor] = useState<any>({ nombre: "NEXVIA", nit: "", email: "", telefono: "", direccion: "" });
+  const [periodoDesde, setPeriodoDesde] = useState("");
+  const [periodoHasta, setPeriodoHasta] = useState("");
+  const [precioSms, setPrecioSms] = useState<number>(0);
+  const [baseSms, setBaseSms] = useState<"delivered" | "total" | "out">("delivered");
+  const [importInfo, setImportInfo] = useState<string>("");
 
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes"],
