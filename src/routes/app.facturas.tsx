@@ -132,6 +132,31 @@ function FacturasPage() {
                   </Select>
                 </div>
               </div>
+
+              <div className="mt-4 p-3 rounded-lg border bg-muted/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wider">Importar SMS desde MDR</Label>
+                  <Button size="sm" variant="outline" onClick={importarDesdeMdr} disabled={!clienteId || !periodoDesde || !periodoHasta || !precioSms}>
+                    Calcular e insertar línea
+                  </Button>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div><Label className="text-xs">Desde</Label><Input type="date" value={periodoDesde} onChange={(e) => setPeriodoDesde(e.target.value)} /></div>
+                  <div><Label className="text-xs">Hasta</Label><Input type="date" value={periodoHasta} onChange={(e) => setPeriodoHasta(e.target.value)} /></div>
+                  <div><Label className="text-xs">Precio / SMS</Label><Input type="number" step="0.01" value={precioSms} onChange={(e) => setPrecioSms(Number(e.target.value))} /></div>
+                  <div><Label className="text-xs">Base</Label>
+                    <Select value={baseSms} onValueChange={(v: any) => setBaseSms(v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="delivered">Entregados</SelectItem>
+                        <SelectItem value="total">Total</SelectItem>
+                        <SelectItem value="out">Salientes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                {importInfo && <div className="text-xs text-muted-foreground">{importInfo}</div>}
+              </div>
               <div className="mt-3">
                 <div className="flex justify-between items-center mb-2">
                   <Label>Líneas</Label>
