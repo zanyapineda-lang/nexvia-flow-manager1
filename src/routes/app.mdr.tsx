@@ -552,12 +552,36 @@ function MdrPage() {
   );
 }
 
-function Metric({ label, value, tone }: { label: string; value: number; tone?: "success" | "destructive" }) {
+function Metric({
+  label,
+  value,
+  tone,
+  color,
+  suffix,
+  decimals = 0,
+}: {
+  label: string;
+  value: number;
+  tone?: "success" | "destructive";
+  color?: string;
+  suffix?: string;
+  decimals?: number;
+}) {
   const toneCls = tone === "success" ? "text-success" : tone === "destructive" ? "text-destructive" : "";
+  const formatted = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString();
   return (
-    <div className="bg-card border rounded-xl p-4">
-      <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
-      <div className={`text-2xl font-bold mt-1 ${toneCls}`}>{value.toLocaleString()}</div>
+    <div
+      className="bg-card border rounded-xl p-4 relative overflow-hidden"
+      style={color ? { borderLeft: `4px solid ${color}` } : undefined}
+    >
+      <div className="text-[10px] text-muted-foreground uppercase tracking-[0.12em] font-semibold truncate">
+        {label}
+      </div>
+      <div className={`text-2xl font-bold mt-1 font-mono ${toneCls}`} style={color && !tone ? { color } : undefined}>
+        {formatted}
+        {suffix && <span className="text-sm font-normal text-muted-foreground ml-0.5">{suffix}</span>}
+      </div>
     </div>
   );
 }
+
