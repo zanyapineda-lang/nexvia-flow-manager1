@@ -156,12 +156,36 @@ function MdrPage() {
   };
 
   const operadorData = summary
-    ? Object.entries(summary.porOperador).map(([name, v]) => ({ name, ...v })).sort((a, b) => b.total - a.total).slice(0, 10)
+    ? Object.entries(summary.porOperador)
+        .map(([name, v]) => ({ name, ...v, color: v.color || OP_COLORS[name] || "#6B7280" }))
+        .sort((a, b) => b.total - a.total)
+    : [];
+  const prefijoData = summary
+    ? Object.entries(summary.porPrefijo)
+        .map(([prefijo, v]) => ({ prefijo, ...v }))
+        .sort((a, b) => b.total - a.total)
+    : [];
+  const horaData = summary
+    ? summary.porHora.map((v, i) => ({ hora: `${i.toString().padStart(2, "0")}h`, total: v }))
+    : [];
+  const topDestinos = summary
+    ? Object.entries(summary.topDestinos)
+        .map(([numero, v]) => ({ numero, ...v }))
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 20)
     : [];
   const diaData = summary
     ? Object.entries(summary.porDia).sort().map(([name, v]) => ({ name, ...v }))
     : [];
-  const dirData = summary ? [{ name: "OUT", value: summary.out }, { name: "IN", value: summary.in }] : [];
+  const entregaData = summary
+    ? [
+        { name: "DELIVRD", value: summary.delivered, color: "#0F6E56" },
+        { name: "UNDELIV / fallidos", value: summary.failed, color: "#C0392B" },
+        { name: "Sin estado", value: summary.sinEstado, color: "#9CA3AF" },
+      ].filter((d) => d.value > 0)
+    : [];
+  const tasaEntrega = summary && summary.out > 0 ? (summary.delivered / summary.out) * 100 : 0;
+  const totalOp = (op: string) => summary?.porOperador[op]?.total || 0;
 
   return (
     <>
