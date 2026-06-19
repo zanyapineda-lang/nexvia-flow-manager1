@@ -15,12 +15,22 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
+import { OP_COLORS } from "@/lib/mdr/parser";
+import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/app/mdr")({
   component: MdrPage,
 });
 
-const COLORS = ["#3DA892", "#2D7DB3", "#C98B2A", "#D9534F", "#7C3AED", "#10B981", "#F59E0B"];
+const PATRON_LABEL: Record<string, string> = {
+  ip_url: "URL con IP directa",
+  tld_sospechoso: "TLD sospechoso",
+  headers_garbled: "Encoding corrupto",
+  template_sin_resolver: "Template sin resolver",
+  apuestas: "Apuestas / casino",
+  smishing_bancario: "Smishing bancario",
+  trial: "Etiqueta [TRIAL]",
+};
 
 function MdrPage() {
   const qc = useQueryClient();
