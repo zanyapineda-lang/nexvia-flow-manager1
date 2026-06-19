@@ -46,85 +46,96 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.985 0.005 200);
-  --foreground: oklch(0.22 0.02 230);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 230);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 230);
-  /* NEXVIA teal */
-  --primary: oklch(0.66 0.10 180);
-  --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.78 0.10 180);
-  --secondary: oklch(0.96 0.01 200);
-  --secondary-foreground: oklch(0.28 0.02 230);
-  --muted: oklch(0.96 0.01 200);
-  --muted-foreground: oklch(0.50 0.02 240);
-  --accent: oklch(0.94 0.04 185);
-  --accent-foreground: oklch(0.30 0.06 200);
-  --destructive: oklch(0.60 0.20 25);
-  --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.62 0.12 160);
-  --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.72 0.14 75);
-  --warning-foreground: oklch(0.25 0.05 75);
-  --info: oklch(0.60 0.13 240);
-  --info-foreground: oklch(1 0 0);
-  --border: oklch(0.91 0.01 220);
-  --input: oklch(0.91 0.01 220);
-  --ring: oklch(0.66 0.10 180);
+  --radius: 0.875rem;
+  /* NEXVIA brand — exact hex */
+  --background: #F4F6F8;
+  --foreground: #1A1D1F;
+  --card: #FFFFFF;
+  --card-foreground: #1A1D1F;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1D1F;
+  --primary: #3DA892;
+  --primary-foreground: #FFFFFF;
+  --primary-glow: #5BC2AC;
+  --primary-dark: #2C8070;
+  --primary-light: #E6F5F2;
+  --secondary: #EEF2F5;
+  --secondary-foreground: #1A1D1F;
+  --muted: #EEF2F5;
+  --muted-foreground: #5B6470;
+  --accent: #E6F5F2;
+  --accent-foreground: #1A1D1F;
+  --accent-blue: #2D7DB3;
+  --destructive: #C0392B;
+  --destructive-foreground: #FFFFFF;
+  --success: #0F6E56;
+  --success-foreground: #FFFFFF;
+  --warning: #B45309;
+  --warning-foreground: #FFFFFF;
+  --info: #2D7DB3;
+  --info-foreground: #FFFFFF;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #3DA892;
 
-  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --gradient-subtle: linear-gradient(180deg, oklch(0.98 0.01 195), oklch(1 0 0));
-  --shadow-elegant: 0 10px 30px -10px color-mix(in oklab, var(--primary) 25%, transparent);
-  --shadow-card: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --gradient-primary: linear-gradient(135deg, #3DA892, #2C8070);
+  --gradient-hero: linear-gradient(135deg, #1A1D1F 0%, #2C8070 60%, #3DA892 100%);
+  --shadow-elegant: 0 10px 30px -10px rgba(61, 168, 146, 0.30);
+  --shadow-card: 0 1px 3px rgba(26,29,31,0.06), 0 1px 2px rgba(26,29,31,0.04);
 
-  --sidebar: oklch(0.99 0.005 200);
-  --sidebar-foreground: oklch(0.28 0.02 230);
-  --sidebar-primary: oklch(0.66 0.10 180);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.95 0.03 185);
-  --sidebar-accent-foreground: oklch(0.30 0.05 200);
-  --sidebar-border: oklch(0.92 0.01 220);
-  --sidebar-ring: oklch(0.66 0.10 180);
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1D1F;
+  --sidebar-primary: #3DA892;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E6F5F2;
+  --sidebar-accent-foreground: #2C8070;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #3DA892;
+}
+
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+  --color-accent-blue: var(--accent-blue);
 }
 
 .dark {
-  --background: oklch(0.18 0.02 230);
-  --foreground: oklch(0.96 0.01 200);
-  --card: oklch(0.22 0.02 230);
-  --card-foreground: oklch(0.96 0.01 200);
-  --popover: oklch(0.22 0.02 230);
-  --popover-foreground: oklch(0.96 0.01 200);
-  --primary: oklch(0.72 0.11 180);
-  --primary-foreground: oklch(0.18 0.02 230);
-  --primary-glow: oklch(0.82 0.10 180);
-  --secondary: oklch(0.28 0.02 230);
-  --secondary-foreground: oklch(0.96 0.01 200);
-  --muted: oklch(0.28 0.02 230);
-  --muted-foreground: oklch(0.70 0.02 220);
-  --accent: oklch(0.32 0.04 195);
-  --accent-foreground: oklch(0.96 0.01 200);
-  --destructive: oklch(0.65 0.20 25);
-  --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.70 0.12 160);
-  --success-foreground: oklch(0.18 0.02 230);
-  --warning: oklch(0.75 0.14 75);
-  --warning-foreground: oklch(0.18 0.02 230);
-  --info: oklch(0.68 0.13 240);
-  --info-foreground: oklch(1 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.72 0.11 180);
-  --sidebar: oklch(0.20 0.02 230);
-  --sidebar-foreground: oklch(0.96 0.01 200);
-  --sidebar-primary: oklch(0.72 0.11 180);
-  --sidebar-primary-foreground: oklch(0.18 0.02 230);
-  --sidebar-accent: oklch(0.28 0.04 195);
-  --sidebar-accent-foreground: oklch(0.96 0.01 200);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.72 0.11 180);
+  --background: #0F1214;
+  --foreground: #F4F6F8;
+  --card: #1A1D1F;
+  --card-foreground: #F4F6F8;
+  --popover: #1A1D1F;
+  --popover-foreground: #F4F6F8;
+  --primary: #3DA892;
+  --primary-foreground: #FFFFFF;
+  --primary-glow: #5BC2AC;
+  --secondary: #232729;
+  --secondary-foreground: #F4F6F8;
+  --muted: #232729;
+  --muted-foreground: #9CA3AF;
+  --accent: #1F3A33;
+  --accent-foreground: #E6F5F2;
+  --destructive: #E04A3A;
+  --destructive-foreground: #FFFFFF;
+  --success: #2BA37F;
+  --success-foreground: #FFFFFF;
+  --warning: #D97706;
+  --warning-foreground: #FFFFFF;
+  --info: #4A95C7;
+  --info-foreground: #FFFFFF;
+  --border: rgba(255,255,255,0.10);
+  --input: rgba(255,255,255,0.14);
+  --ring: #3DA892;
+  --sidebar: #131618;
+  --sidebar-foreground: #F4F6F8;
+  --sidebar-primary: #3DA892;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1F3A33;
+  --sidebar-accent-foreground: #E6F5F2;
+  --sidebar-border: rgba(255,255,255,0.08);
+  --sidebar-ring: #3DA892;
 }
 
 @layer base {
@@ -133,5 +144,27 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .font-mono { font-family: var(--font-mono); }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; }
+}
+
+@utility nx-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+}
+@utility nx-accent-strip {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 14px 14px 0 0;
   }
 }
+

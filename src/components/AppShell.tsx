@@ -36,20 +36,26 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigate({ to: "/auth" });
   };
 
+  const activeLabel = nav.find((n) => (n.exact ? pathname === n.to : pathname.startsWith(n.to)))?.label ?? "Panel";
+
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background text-foreground">
       <aside className="w-60 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col sticky top-0 h-screen">
         <div className="h-16 flex items-center gap-3 px-5 border-b border-sidebar-border">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-primary-foreground font-bold text-sm shadow-[var(--shadow-elegant)]">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-extrabold text-sm tracking-tight shadow-[var(--shadow-elegant)]"
+            style={{ background: "var(--gradient-primary)" }}
+            aria-label="NEXVIA"
+          >
             NX
           </div>
           <div>
-            <div className="font-semibold text-sidebar-foreground leading-tight">NEXVIA</div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Panel de Gestión</div>
+            <div className="font-bold text-sidebar-foreground leading-tight tracking-tight">NEXVIA</div>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-[0.14em] font-medium">Suite</div>
           </div>
         </div>
         <nav className="flex-1 py-4 overflow-y-auto">
-          <div className="px-5 pb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="px-5 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Módulos
           </div>
           {nav.map((it) => {
@@ -62,8 +68,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className={cn(
                   "flex items-center gap-3 px-5 py-2.5 text-sm border-l-[3px] border-transparent transition-colors",
                   active
-                    ? "bg-sidebar-accent text-primary border-primary font-semibold"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+                    ? "bg-sidebar-accent text-primary-dark border-primary font-semibold"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                 )}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -73,7 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="border-t border-sidebar-border p-4">
-          <div className="text-xs text-muted-foreground truncate mb-2">{user?.email}</div>
+          <div className="text-xs text-muted-foreground truncate mb-2 font-mono">{user?.email}</div>
           <button
             onClick={logout}
             className="w-full flex items-center justify-center gap-2 text-xs py-2 rounded-md border border-border hover:bg-muted transition-colors"
@@ -83,11 +89,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
       <main className="flex-1 min-w-0">
-        <div className="h-16 border-b bg-card/50 backdrop-blur sticky top-0 z-10 flex items-center justify-between px-8">
-          <div className="text-sm text-muted-foreground">
-            {new Date().toLocaleDateString("es-CO", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+        <div className="h-16 border-b border-border bg-card/90 backdrop-blur sticky top-0 z-10 flex items-center justify-between px-8">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="font-semibold text-foreground">{activeLabel}</span>
+            <span className="text-muted-foreground/50">/</span>
+            <span className="text-muted-foreground font-mono text-xs">
+              {new Date().toLocaleDateString("es-CO", { year: "numeric", month: "short", day: "2-digit" })}
+            </span>
           </div>
-          <div className="text-xs px-3 py-1 rounded-full bg-success/10 text-success border border-success/20">
+          <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-success/10 text-success border border-success/20 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             Online
           </div>
         </div>
