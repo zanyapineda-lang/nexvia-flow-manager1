@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { parseFileStream, parseText, type MdrSummary } from "@/lib/mdr/parser";
+import { parseFileStream, parseText, emptySummary, type MdrSummary } from "@/lib/mdr/parser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
