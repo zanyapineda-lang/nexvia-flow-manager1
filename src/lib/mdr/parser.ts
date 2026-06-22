@@ -225,15 +225,19 @@ export function accumulate(s: MdrSummary, r: MdrRow) {
   else if (fallido) s.failed++;
   else if (isOut) s.sinEstado++;
 
-  // operador carrier (por destino)
-  if (isOut) {
+  // operador carrier (por destino) — contar siempre que el destino tenga forma de número,
+  // sin importar si la dirección viene como OUT/MT/SUBMIT/etc.
+  const destinoDigits = (r.destino || "").replace(/\D/g, "");
+  const esNumero = destinoDigits.length >= 7;
+  if (esNumero) {
     const opName = r.operadorCarrier;
     const color = OP_COLORS[opName] || "#6B7280";
     if (!s.porOperador[opName])
       s.porOperador[opName] = { total: 0, delivered: 0, failed: 0, out: 0, in: 0, color };
     const o = s.porOperador[opName];
     o.total++;
-    o.out++;
+    if (isOut) o.out++;
+    if (isIn) o.in++;
     if (delivrd) o.delivered++;
     else if (fallido) o.failed++;
 
@@ -254,7 +258,7 @@ export function accumulate(s: MdrSummary, r: MdrRow) {
       s.topDestinos[r.destino].total++;
     }
 
-    // últimos eventos OUT (mantener tamaño 50)
+    // últimos eventos (mantener tamaño 50)
     s.ultimos.push(r);
     if (s.ultimos.length > 50) s.ultimos.shift();
   }
