@@ -33,6 +33,28 @@ const PATRON_LABEL: Record<string, string> = {
   trial: "Etiqueta [TRIAL]",
 };
 
+function normalizeSummary(raw: any): MdrSummary {
+  const base = emptySummary();
+  if (!raw || typeof raw !== "object") return base;
+  return {
+    ...base,
+    ...raw,
+    porOperador: raw.porOperador || {},
+    porPrefijo: raw.porPrefijo || {},
+    porDia: raw.porDia || {},
+    porCuenta: raw.porCuenta || {},
+    porHora: Array.isArray(raw.porHora) && raw.porHora.length === 24 ? raw.porHora : base.porHora,
+    topDestinos: raw.topDestinos || {},
+    ultimos: Array.isArray(raw.ultimos) ? raw.ultimos : [],
+    fraude: {
+      ...base.fraude,
+      ...(raw.fraude || {}),
+      porPatron: { ...base.fraude.porPatron, ...((raw.fraude && raw.fraude.porPatron) || {}) },
+      muestras: Array.isArray(raw.fraude?.muestras) ? raw.fraude.muestras : [],
+    },
+  };
+}
+
 function MdrPage() {
   const qc = useQueryClient();
   const [summary, setSummary] = useState<MdrSummary | null>(null);
