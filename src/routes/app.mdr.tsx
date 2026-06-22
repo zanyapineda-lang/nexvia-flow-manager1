@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { parseFileStream, parseText, type MdrSummary } from "@/lib/mdr/parser";
+import { parseFileStream, parseText, emptySummary, type MdrSummary } from "@/lib/mdr/parser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,28 @@ const PATRON_LABEL: Record<string, string> = {
   smishing_bancario: "Smishing bancario",
   trial: "Etiqueta [TRIAL]",
 };
+
+function normalizeSummary(raw: any): MdrSummary {
+  const base = emptySummary();
+  if (!raw || typeof raw !== "object") return base;
+  return {
+    ...base,
+    ...raw,
+    porOperador: raw.porOperador || {},
+    porPrefijo: raw.porPrefijo || {},
+    porDia: raw.porDia || {},
+    porCuenta: raw.porCuenta || {},
+    porHora: Array.isArray(raw.porHora) && raw.porHora.length === 24 ? raw.porHora : base.porHora,
+    topDestinos: raw.topDestinos || {},
+    ultimos: Array.isArray(raw.ultimos) ? raw.ultimos : [],
+    fraude: {
+      ...base.fraude,
+      ...(raw.fraude || {}),
+      porPatron: { ...base.fraude.porPatron, ...((raw.fraude && raw.fraude.porPatron) || {}) },
+      muestras: Array.isArray(raw.fraude?.muestras) ? raw.fraude.muestras : [],
+    },
+  };
+}
 
 function MdrPage() {
   const qc = useQueryClient();
@@ -559,7 +581,7 @@ function MdrPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setSummary(d.resumen)}>Ver</Button>
+                  <Button size="sm" variant="outline" onClick={() => { setSummary(normalizeSummary(d.resumen)); setNombre(d.nombre || ""); setTipo(d.tipo || "MDR"); setClienteId(d.cliente_id || ""); setPeriodoDesde(d.fecha_desde || ""); setPeriodoHasta(d.fecha_hasta || ""); }}>Ver</Button>
                   <Button size="sm" variant="ghost" onClick={() => eliminarDataset(d.id)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </div>
