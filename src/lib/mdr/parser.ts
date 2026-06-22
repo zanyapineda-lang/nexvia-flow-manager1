@@ -214,12 +214,16 @@ const OP_COLORS: Record<string, string> = {
 
 export function accumulate(s: MdrSummary, r: MdrRow) {
   s.total++;
-  const isOut = r.direccion === "OUT";
-  const isIn = r.direccion === "RECEIVED" || r.direccion === "IN";
+  const dir = (r.direccion || "").toUpperCase();
+  const isIn = dir === "RECEIVED" || dir === "IN" || dir === "MO";
+  // Si no es explícitamente entrante y el destino parece un número telefónico,
+  // lo tratamos como saliente (MT/OUT/SUBMIT/DELIVER).
+  const destDigits = (r.destino || "").replace(/\D/g, "");
+  const isOut = !isIn && (dir === "OUT" || dir === "MT" || dir === "SUBMIT" || dir === "DELIVER" || destDigits.length >= 7);
   if (isOut) s.out++;
   if (isIn) s.in++;
 
-  const delivrd = r.estado === "DELIVRD";
+  const delivrd = r.estado === "DELIVRD" || r.estado === "DELIVERED";
   const fallido = r.estado && r.estado !== "RECEIVED" && r.estado !== "—" && !delivrd;
   if (delivrd) s.delivered++;
   else if (fallido) s.failed++;
