@@ -197,7 +197,25 @@ function MdrPage() {
         actions={
           summary && (
             <>
-              <Button variant="outline" onClick={exportPDF}><Download className="w-4 h-4 mr-1" /> PDF</Button>
+              <Button variant="outline" onClick={exportPDF}><Download className="w-4 h-4 mr-1" /> PDF simple</Button>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  const cliente = clientes.find((c: any) => c.id === clienteId)?.nombre;
+                  toast.promise(
+                    generateExecutivePDF(summary, {
+                      nombre,
+                      tipo,
+                      cliente,
+                      periodoDesde,
+                      periodoHasta,
+                    }),
+                    { loading: "Generando informe ejecutivo…", success: "Informe listo", error: "Error generando PDF" },
+                  );
+                }}
+              >
+                <Download className="w-4 h-4 mr-1" /> Informe ejecutivo
+              </Button>
               <Button onClick={guardar}><Save className="w-4 h-4 mr-1" /> Guardar</Button>
             </>
           )
