@@ -581,7 +581,7 @@ function MdrPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setSummary(d.resumen)}>Ver</Button>
+                  <Button size="sm" variant="outline" onClick={() => { setSummary(normalizeSummary(d.resumen)); setNombre(d.nombre || ""); setTipo(d.tipo || "MDR"); setClienteId(d.cliente_id || ""); setPeriodoDesde(d.fecha_desde || ""); setPeriodoHasta(d.fecha_hasta || ""); }}>Ver</Button>
                   <Button size="sm" variant="ghost" onClick={() => eliminarDataset(d.id)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </div>
