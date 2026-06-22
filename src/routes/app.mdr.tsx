@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { generateExecutivePDF } from "@/lib/mdr/pdf-report";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
 import { OP_COLORS } from "@/lib/mdr/parser";
@@ -196,7 +197,25 @@ function MdrPage() {
         actions={
           summary && (
             <>
-              <Button variant="outline" onClick={exportPDF}><Download className="w-4 h-4 mr-1" /> PDF</Button>
+              <Button variant="outline" onClick={exportPDF}><Download className="w-4 h-4 mr-1" /> PDF simple</Button>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  const cliente = clientes.find((c: any) => c.id === clienteId)?.nombre;
+                  toast.promise(
+                    generateExecutivePDF(summary, {
+                      nombre,
+                      tipo,
+                      cliente,
+                      periodoDesde,
+                      periodoHasta,
+                    }),
+                    { loading: "Generando informe ejecutivo…", success: "Informe listo", error: "Error generando PDF" },
+                  );
+                }}
+              >
+                <Download className="w-4 h-4 mr-1" /> Informe ejecutivo
+              </Button>
               <Button onClick={guardar}><Save className="w-4 h-4 mr-1" /> Guardar</Button>
             </>
           )
