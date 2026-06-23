@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageTitle } from "@/components/AppShell";
-import { Wallet, Plus, Trash2, TrendingUp, TrendingDown, Download, Upload, Info, FileDown, CornerUpLeft } from "lucide-react";
+import { Wallet, Plus, Trash2, TrendingUp, TrendingDown, Download, Info, FileDown, CornerUpLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
