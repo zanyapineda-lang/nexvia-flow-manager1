@@ -116,6 +116,97 @@ function MovimientosPage() {
     doc.save(`movimientos-${desde || "todos"}.pdf`);
   };
 
+  // -------- CSV Export / Import --------
+  const CSV_HEADERS = ["fecha", "tipo", "categoria", "descripcion", "monto", "cliente", "notas"];
+
+  const csvEscape = (v: any) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
+  const exportCSV = () => {
+    const rows = [CSV_HEADERS.join(",")];
+    movs.forEach((m: any) => {
+      rows.push([
+        m.fecha, m.tipo, m.categoria || "", m.descripcion, m.monto,
+        m.clientes?.nombre || "", m.notas || "",
+      ].map(csvEscape).join(","));
+    });
+    const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `movimientos-nexvia-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`${movs.length} movimientos exportados`);
+  };
+
+  const importCSV = async (file: File) => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return toast.error("No autenticado");
+    const text = await file.text();
+    const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter((l) => l.trim());
+    if (lines.length < 2) return toast.error("CSV vacío");
+    const delim = lines[0].includes(";") && !lines[0].includes(",") ? ";" : ",";
+    const parseLine = (line: string) => {
+      const out: string[] = [];
+      let cur = "", inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (inQ) {
+          if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+          else if (c === '"') inQ = false;
+          else cur += c;
+        } else {
+          if (c === '"') inQ = true;
+          else if (c === delim) { out.push(cur); cur = ""; }
+          else cur += c;
+        }
+      }
+      out.push(cur);
+      return out;
+    };
+    const headers = parseLine(lines[0]).map((h) => h.trim().toLowerCase());
+    const idx = (k: string) => headers.indexOf(k);
+    const rows = lines.slice(1).map(parseLine);
+    const clientesMap = new Map<string, string>(clientes.map((c: any) => [c.nombre.toLowerCase(), c.id]));
+    const payload = rows
+      .map((r) => {
+        const tipo = (r[idx("tipo")] || "ingreso").toLowerCase();
+        const monto = Number((r[idx("monto")] || "0").replace(/[^\d.-]/g, ""));
+        if (!r[idx("descripcion")] || !monto) return null;
+        const clienteName = (r[idx("cliente")] || "").toLowerCase();
+        return {
+          user_id: u.user!.id,
+          fecha: r[idx("fecha")] || new Date().toISOString().slice(0, 10),
+          tipo: tipo === "egreso" ? "egreso" : "ingreso",
+          categoria: r[idx("categoria")] || null,
+          descripcion: r[idx("descripcion")],
+          monto,
+          notas: r[idx("notas")] || null,
+          cliente_id: clientesMap.get(clienteName) || null,
+        };
+      })
+      .filter(Boolean);
+    if (!payload.length) return toast.error("Sin filas válidas");
+    const { error } = await supabase.from("movimientos_contables").insert(payload as any);
+    if (error) return toast.error(error.message);
+    toast.success(`${payload.length} movimientos importados`);
+    qc.invalidateQueries({ queryKey: ["movimientos"] });
+  };
+
+  const borrarTodo = async () => {
+    if (!confirm("¿Borrar TODOS tus movimientos? Esta acción no se puede deshacer.")) return;
+    if (!confirm("Confirma una segunda vez para continuar.")) return;
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const { error } = await supabase.from("movimientos_contables").delete().eq("user_id", u.user.id);
+    if (error) return toast.error(error.message);
+    toast.success("Todos los movimientos eliminados");
+    qc.invalidateQueries({ queryKey: ["movimientos"] });
+  };
+
   return (
     <>
       <PageTitle icon={Wallet} title="Movimientos contables" subtitle="Registra ingresos, egresos y adjunta soportes"
