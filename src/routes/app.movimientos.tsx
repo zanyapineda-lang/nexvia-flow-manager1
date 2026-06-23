@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageTitle } from "@/components/AppShell";
-import { Wallet, Plus, Trash2, TrendingUp, TrendingDown, Download } from "lucide-react";
+import { Wallet, Plus, Trash2, TrendingUp, TrendingDown, Download, Info, FileDown, CornerUpLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,6 +116,97 @@ function MovimientosPage() {
     doc.save(`movimientos-${desde || "todos"}.pdf`);
   };
 
+  // -------- CSV Export / Import --------
+  const CSV_HEADERS = ["fecha", "tipo", "categoria", "descripcion", "monto", "cliente", "notas"];
+
+  const csvEscape = (v: any) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
+  const exportCSV = () => {
+    const rows = [CSV_HEADERS.join(",")];
+    movs.forEach((m: any) => {
+      rows.push([
+        m.fecha, m.tipo, m.categoria || "", m.descripcion, m.monto,
+        m.clientes?.nombre || "", m.notas || "",
+      ].map(csvEscape).join(","));
+    });
+    const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `movimientos-nexvia-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`${movs.length} movimientos exportados`);
+  };
+
+  const importCSV = async (file: File) => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return toast.error("No autenticado");
+    const text = await file.text();
+    const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter((l) => l.trim());
+    if (lines.length < 2) return toast.error("CSV vacío");
+    const delim = lines[0].includes(";") && !lines[0].includes(",") ? ";" : ",";
+    const parseLine = (line: string) => {
+      const out: string[] = [];
+      let cur = "", inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (inQ) {
+          if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+          else if (c === '"') inQ = false;
+          else cur += c;
+        } else {
+          if (c === '"') inQ = true;
+          else if (c === delim) { out.push(cur); cur = ""; }
+          else cur += c;
+        }
+      }
+      out.push(cur);
+      return out;
+    };
+    const headers = parseLine(lines[0]).map((h) => h.trim().toLowerCase());
+    const idx = (k: string) => headers.indexOf(k);
+    const rows = lines.slice(1).map(parseLine);
+    const clientesMap = new Map<string, string>(clientes.map((c: any) => [c.nombre.toLowerCase(), c.id]));
+    const payload = rows
+      .map((r) => {
+        const tipo = (r[idx("tipo")] || "ingreso").toLowerCase();
+        const monto = Number((r[idx("monto")] || "0").replace(/[^\d.-]/g, ""));
+        if (!r[idx("descripcion")] || !monto) return null;
+        const clienteName = (r[idx("cliente")] || "").toLowerCase();
+        return {
+          user_id: u.user!.id,
+          fecha: r[idx("fecha")] || new Date().toISOString().slice(0, 10),
+          tipo: tipo === "egreso" ? "egreso" : "ingreso",
+          categoria: r[idx("categoria")] || null,
+          descripcion: r[idx("descripcion")],
+          monto,
+          notas: r[idx("notas")] || null,
+          cliente_id: clientesMap.get(clienteName) || null,
+        };
+      })
+      .filter(Boolean);
+    if (!payload.length) return toast.error("Sin filas válidas");
+    const { error } = await supabase.from("movimientos_contables").insert(payload as any);
+    if (error) return toast.error(error.message);
+    toast.success(`${payload.length} movimientos importados`);
+    qc.invalidateQueries({ queryKey: ["movimientos"] });
+  };
+
+  const borrarTodo = async () => {
+    if (!confirm("¿Borrar TODOS tus movimientos? Esta acción no se puede deshacer.")) return;
+    if (!confirm("Confirma una segunda vez para continuar.")) return;
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const { error } = await supabase.from("movimientos_contables").delete().eq("user_id", u.user.id);
+    if (error) return toast.error(error.message);
+    toast.success("Todos los movimientos eliminados");
+    qc.invalidateQueries({ queryKey: ["movimientos"] });
+  };
+
   return (
     <>
       <PageTitle icon={Wallet} title="Movimientos contables" subtitle="Registra ingresos, egresos y adjunta soportes"
@@ -225,6 +316,60 @@ function MovimientosPage() {
             {!movs.length && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Sin movimientos</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      {/* Exportar / Importar */}
+      <div className="mt-8">
+        <div className="flex items-center gap-2 mb-3">
+          <FileDown className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-bold">Exportar / Importar</h2>
+        </div>
+        <div className="bg-card border rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-3 text-xs uppercase tracking-wider text-muted-foreground">
+            <Info className="w-3.5 h-3.5 text-primary" />
+            Cómo guardar los datos en tu computador
+          </div>
+          <ol className="space-y-2.5 mb-5 text-sm">
+            {[
+              <>Haz clic en <b className="text-primary">Descargar CSV</b> — se guarda en tu carpeta de Descargas.</>,
+              <>Abre el CSV con <b className="text-primary">Excel</b> (doble clic) o desde Google Sheets en Drive.</>,
+              <>Los documentos adjuntos (facturas, comprobantes) quedan guardados en la nube. El CSV guarda los movimientos contables.</>,
+              <>Descarga el CSV regularmente como respaldo. Si cambias de equipo o navegador usa <b className="text-primary">Importar CSV</b> para recuperar los movimientos.</>,
+            ].map((txt, i) => (
+              <li key={i} className="flex gap-3 items-start">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                <span className="leading-relaxed pt-0.5">{txt}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={exportCSV} className="gap-1.5">
+              <Download className="w-4 h-4" /> Descargar CSV
+            </Button>
+            <label>
+              <Button variant="outline" asChild className="gap-1.5 cursor-pointer">
+                <span><CornerUpLeft className="w-4 h-4" /> Importar CSV</span>
+              </Button>
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) importCSV(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <Button
+              variant="outline"
+              onClick={borrarTodo}
+              className="gap-1.5 text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="w-4 h-4" /> Borrar todo
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   );
