@@ -317,6 +317,60 @@ function MovimientosPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Exportar / Importar */}
+      <div className="mt-8">
+        <div className="flex items-center gap-2 mb-3">
+          <FileDown className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-bold">Exportar / Importar</h2>
+        </div>
+        <div className="bg-card border rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-3 text-xs uppercase tracking-wider text-muted-foreground">
+            <Info className="w-3.5 h-3.5 text-primary" />
+            Cómo guardar los datos en tu computador
+          </div>
+          <ol className="space-y-2.5 mb-5 text-sm">
+            {[
+              <>Haz clic en <b className="text-primary">Descargar CSV</b> — se guarda en tu carpeta de Descargas.</>,
+              <>Abre el CSV con <b className="text-primary">Excel</b> (doble clic) o desde Google Sheets en Drive.</>,
+              <>Los documentos adjuntos (facturas, comprobantes) quedan guardados en la nube. El CSV guarda los movimientos contables.</>,
+              <>Descarga el CSV regularmente como respaldo. Si cambias de equipo o navegador usa <b className="text-primary">Importar CSV</b> para recuperar los movimientos.</>,
+            ].map((txt, i) => (
+              <li key={i} className="flex gap-3 items-start">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                <span className="leading-relaxed pt-0.5">{txt}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={exportCSV} className="gap-1.5">
+              <Download className="w-4 h-4" /> Descargar CSV
+            </Button>
+            <label>
+              <Button variant="outline" asChild className="gap-1.5 cursor-pointer">
+                <span><CornerUpLeft className="w-4 h-4" /> Importar CSV</span>
+              </Button>
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) importCSV(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <Button
+              variant="outline"
+              onClick={borrarTodo}
+              className="gap-1.5 text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="w-4 h-4" /> Borrar todo
+            </Button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
