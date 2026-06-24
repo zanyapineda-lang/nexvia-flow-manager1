@@ -346,10 +346,10 @@ function MovimientosPage() {
             <Button onClick={exportCSV} className="gap-1.5">
               <Download className="w-4 h-4" /> Descargar CSV
             </Button>
-            <label>
-              <Button variant="outline" asChild className="gap-1.5 cursor-pointer">
-                <span><CornerUpLeft className="w-4 h-4" /> Importar CSV</span>
-              </Button>
+            <label className="inline-flex">
+              <span className="inline-flex items-center gap-1.5 cursor-pointer rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 text-sm font-medium">
+                <CornerUpLeft className="w-4 h-4" /> Importar CSV
+              </span>
               <input
                 type="file"
                 accept=".csv,text/csv"
