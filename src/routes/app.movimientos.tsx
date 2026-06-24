@@ -151,9 +151,15 @@ function MovimientosPage() {
       if (!u.user) return toast.error("No autenticado");
 
       const text = await file.text();
-      const cleanText = text.replace(/^\uFEFF/, "");
-      const firstLine = cleanText.split(/\r?\n/).find((l) => l.trim()) || "";
-      const delimiter = firstLine.split(";").length > firstLine.split(",").length ? ";" : ",";
+      let cleanText = text.replace(/^\uFEFF/, "");
+      let firstLine = cleanText.split(/\r?\n/).find((l) => l.trim()) || "";
+      let delimiter = firstLine.split(";").length > firstLine.split(",").length ? ";" : ",";
+      const excelSep = firstLine.match(/^sep=(.)\s*$/i);
+      if (excelSep) {
+        delimiter = excelSep[1];
+        cleanText = cleanText.split(/\r?\n/).slice(1).join("\n");
+        firstLine = cleanText.split(/\r?\n/).find((l) => l.trim()) || "";
+      }
 
       const parseCSVText = (csv: string) => {
         const rows: string[][] = [];
@@ -188,6 +194,18 @@ function MovimientosPage() {
           : cleaned.replace(/,/g, "");
         return Math.abs(Number(normalized));
       };
+      const parseDate = (value: string) => {
+        const raw = String(value || "").trim();
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+        const slash = raw.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);
+        if (slash) {
+          const dd = slash[1].padStart(2, "0");
+          const mm = slash[2].padStart(2, "0");
+          const yyyy = slash[3].length === 2 ? `20${slash[3]}` : slash[3];
+          return `${yyyy}-${mm}-${dd}`;
+        }
+        return new Date().toISOString().slice(0, 10);
+      };
 
       const parsed = parseCSVText(cleanText);
       if (parsed.length < 2) return toast.error("CSV vacío o sin filas para importar");
@@ -216,7 +234,7 @@ function MovimientosPage() {
           const clienteName = normalize(iCliente >= 0 ? r[iCliente] || "" : "");
           return {
             user_id: u.user!.id,
-            fecha: (iFecha >= 0 && r[iFecha]) || new Date().toISOString().slice(0, 10),
+            fecha: parseDate(iFecha >= 0 ? r[iFecha] : ""),
             tipo: tipoRaw.includes("egreso") || tipoRaw.includes("gasto") || tipoRaw.includes("salida") ? "egreso" : "ingreso",
             categoria: (iCategoria >= 0 && r[iCategoria]) || null,
             descripcion,
@@ -390,19 +408,23 @@ function MovimientosPage() {
             <Button onClick={exportCSV} className="gap-1.5">
               <Download className="w-4 h-4" /> Descargar CSV
             </Button>
-            <Button type="button" variant="outline" onClick={() => csvInputRef.current?.click()} disabled={importando} className="gap-1.5">
-              <CornerUpLeft className="w-4 h-4" /> {importando ? "Importando..." : "Importar CSV"}
-            </Button>
-            <input
-              ref={csvInputRef}
-              type="file"
-              accept=".csv,text/csv,application/vnd.ms-excel"
-              className="sr-only"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) importCSV(f);
-              }}
-            />
+            <div className="relative inline-flex">
+              <Button type="button" variant="outline" disabled={importando} className="gap-1.5 pointer-events-none">
+                <CornerUpLeft className="w-4 h-4" /> {importando ? "Importando..." : "Importar CSV"}
+              </Button>
+              <input
+                ref={csvInputRef}
+                type="file"
+                accept=".csv,.CSV,.svc,text/csv,text/plain,application/csv,application/vnd.ms-excel"
+                disabled={importando}
+                aria-label="Importar CSV"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) importCSV(f);
+                }}
+              />
+            </div>
             <Button
               variant="outline"
               onClick={borrarTodo}
