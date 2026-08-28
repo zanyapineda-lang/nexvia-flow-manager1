@@ -69,7 +69,7 @@ function MdrPage() {
 
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes"],
-    queryFn: async () => (await supabase.from("clientes").select("id,nombre").order("nombre")).data || [],
+    queryFn: async () => (await supabase.from("clientes").select("id,nombre,codigo_smpp").order("nombre")).data || [],
   });
 
   const { data: datasets = [] } = useQuery({

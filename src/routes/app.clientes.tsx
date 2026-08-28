@@ -118,7 +118,7 @@ function ClientesPage() {
                 </td>
               </tr>
             ))}
-            {!data.length && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Aún no tienes clientes</td></tr>}
+            {!data.length && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Aún no tienes clientes</td></tr>}
           </tbody>
         </table>
       </div>
