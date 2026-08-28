@@ -15,7 +15,7 @@ export const Route = createFileRoute("/app/clientes")({
   component: ClientesPage,
 });
 
-type Cliente = { id: string; nombre: string; nit?: string; email?: string; telefono?: string; direccion?: string; ciudad?: string; notas?: string };
+type Cliente = { id: string; nombre: string; nit?: string; email?: string; telefono?: string; direccion?: string; ciudad?: string; notas?: string; codigo_smpp?: string };
 
 function ClientesPage() {
   const qc = useQueryClient();
@@ -74,6 +74,11 @@ function ClientesPage() {
                   <div><Label>Teléfono</Label><Input value={edit.telefono || ""} onChange={(e) => setEdit({ ...edit, telefono: e.target.value })} /></div>
                 </div>
                 <div><Label>Email</Label><Input type="email" value={edit.email || ""} onChange={(e) => setEdit({ ...edit, email: e.target.value })} /></div>
+                <div>
+                  <Label>Código SMPP</Label>
+                  <Input value={edit.codigo_smpp || ""} onChange={(e) => setEdit({ ...edit, codigo_smpp: e.target.value })} placeholder="Electcapital_mkt" />
+                  <p className="text-xs text-muted-foreground mt-1">Identificador de cuenta usado en los logs de Jasmin, ej: Electcapital_mkt</p>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label>Dirección</Label><Input value={edit.direccion || ""} onChange={(e) => setEdit({ ...edit, direccion: e.target.value })} /></div>
                   <div><Label>Ciudad</Label><Input value={edit.ciudad || ""} onChange={(e) => setEdit({ ...edit, ciudad: e.target.value })} /></div>
@@ -91,6 +96,7 @@ function ClientesPage() {
             <tr>
               <th className="text-left p-3">Nombre</th>
               <th className="text-left p-3">NIT</th>
+              <th className="text-left p-3">Código SMPP</th>
               <th className="text-left p-3">Email</th>
               <th className="text-left p-3">Teléfono</th>
               <th className="text-left p-3">Ciudad</th>
@@ -102,6 +108,7 @@ function ClientesPage() {
               <tr key={c.id} className="border-t hover:bg-muted/30">
                 <td className="p-3 font-medium">{c.nombre}</td>
                 <td className="p-3 text-muted-foreground">{c.nit || "—"}</td>
+                <td className="p-3 text-muted-foreground font-mono text-xs">{c.codigo_smpp || "—"}</td>
                 <td className="p-3 text-muted-foreground">{c.email || "—"}</td>
                 <td className="p-3 text-muted-foreground">{c.telefono || "—"}</td>
                 <td className="p-3 text-muted-foreground">{c.ciudad || "—"}</td>
@@ -111,7 +118,7 @@ function ClientesPage() {
                 </td>
               </tr>
             ))}
-            {!data.length && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Aún no tienes clientes</td></tr>}
+            {!data.length && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Aún no tienes clientes</td></tr>}
           </tbody>
         </table>
       </div>

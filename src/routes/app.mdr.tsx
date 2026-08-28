@@ -69,7 +69,7 @@ function MdrPage() {
 
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes"],
-    queryFn: async () => (await supabase.from("clientes").select("id,nombre").order("nombre")).data || [],
+    queryFn: async () => (await supabase.from("clientes").select("id,nombre,codigo_smpp").order("nombre")).data || [],
   });
 
   const { data: datasets = [] } = useQuery({
@@ -209,6 +209,14 @@ function MdrPage() {
     : [];
   const tasaEntrega = summary && summary.out > 0 ? (summary.delivered / summary.out) * 100 : 0;
   const totalOp = (op: string) => summary?.porOperador[op]?.total || 0;
+  const cuentaData = summary
+    ? Object.entries(summary.porCuenta)
+        .map(([cuenta, total]) => {
+          const cliente = clientes.find((c: any) => c.codigo_smpp && c.codigo_smpp === cuenta);
+          return { cuenta, total, clienteNombre: cliente?.nombre };
+        })
+        .sort((a, b) => b.total - a.total)
+    : [];
 
   return (
     <>
@@ -363,6 +371,39 @@ function MdrPage() {
               </ResponsiveContainer>
             </div>
           </div>
+
+          {/* Detalle por cuenta SMPP */}
+          {cuentaData.length > 0 && (
+            <div className="bg-card border rounded-xl p-5 mb-6 nx-accent-strip">
+              <h3 className="font-semibold mb-3">Detalle por cuenta SMPP</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="text-xs uppercase text-muted-foreground bg-muted/50">
+                    <tr>
+                      <th className="text-left p-2">Cuenta (log)</th>
+                      <th className="text-left p-2">Cliente</th>
+                      <th className="text-right p-2">Registros</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cuentaData.map((c) => (
+                      <tr key={c.cuenta} className="border-t hover:bg-muted/30">
+                        <td className="p-2 font-mono text-xs">{c.cuenta}</td>
+                        <td className="p-2">
+                          {c.clienteNombre ? (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{c.clienteNombre}</span>
+                          ) : (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/30 font-medium">Sin cliente vinculado</span>
+                          )}
+                        </td>
+                        <td className="text-right p-2 font-mono">{c.total.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Por bloque de numeración */}
           {prefijoData.length > 0 && (

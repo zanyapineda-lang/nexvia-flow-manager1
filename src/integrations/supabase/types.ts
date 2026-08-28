@@ -56,6 +56,7 @@ export type Database = {
       clientes: {
         Row: {
           ciudad: string | null
+          codigo_smpp: string | null
           created_at: string
           direccion: string | null
           email: string | null
@@ -69,6 +70,7 @@ export type Database = {
         }
         Insert: {
           ciudad?: string | null
+          codigo_smpp?: string | null
           created_at?: string
           direccion?: string | null
           email?: string | null
@@ -82,6 +84,7 @@ export type Database = {
         }
         Update: {
           ciudad?: string | null
+          codigo_smpp?: string | null
           created_at?: string
           direccion?: string | null
           email?: string | null
